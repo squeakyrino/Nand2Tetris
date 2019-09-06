@@ -1,0 +1,52 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/03/b/RAM4K.hdl
+
+/**
+ * Memory of 4K registers, each 16 bit-wide. Out holds the value
+ * stored at the memory location specified by address. If load==1, then 
+ * the in value is loaded into the memory location specified by address 
+ * (the loaded value will be emitted to out from the next time step onward).
+ */
+
+CHIP RAM4K {
+    IN in[16], load, address[12];
+    OUT out[16];
+
+    PARTS:
+    // Put your code here:
+    
+    //MSB of the address select one of the RAM512 chips
+    DMux8Way(in = load, sel = address[9..11],
+             a = dmux.1, 
+             b = dmux.2, 
+             c = dmux.3, 
+             d = dmux.4, 
+             e = dmux.5, 
+             f = dmux.6, 
+             g = dmux.7, 
+             h = dmux.8);
+             
+    //RAM512 chips
+    RAM512(in = in, load = dmux.1, address = address[0..8], out = out.1);
+    RAM512(in = in, load = dmux.2, address = address[0..8], out = out.2);
+    RAM512(in = in, load = dmux.3, address = address[0..8], out = out.3);
+    RAM512(in = in, load = dmux.4, address = address[0..8], out = out.4);
+    RAM512(in = in, load = dmux.5, address = address[0..8], out = out.5);
+    RAM512(in = in, load = dmux.6, address = address[0..8], out = out.6);
+    RAM512(in = in, load = dmux.7, address = address[0..8], out = out.7);
+    RAM512(in = in, load = dmux.8, address = address[0..8], out = out.8);
+    
+    //Mux the output using the MSB
+    Mux8Way16(a = out.1,
+              b = out.2,
+              c = out.3,
+              d = out.4,
+              e = out.5,
+              f = out.6,
+              g = out.7,
+              h = out.8,
+              sel = address[9..11],
+              out = out);
+}
